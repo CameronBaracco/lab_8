@@ -29,8 +29,60 @@ size_t Size(void* ptr)
 
 // implement merge sort
 // extraMemoryAllocated counts bytes of extra memory allocated
-void mergeSort(int pData[], int l, int r)
-{
+void mergeSort(int arr[], int l, int r) {
+    if (l < r) {
+        // Same as (l+r)/2, but avoids overflow for large l and r
+        int m = l + (r - l) / 2;
+        
+        // Sort first and second halves
+        mergeSort(arr, l, m);
+        mergeSort(arr, m + 1, r);
+        
+        // Merge the sorted halves
+        
+        // Allocate memory for temporary arrays
+        int n1 = m - l + 1;
+        int n2 = r - m;
+        int *L = (int *)Alloc(n1 * sizeof(int));
+        int *R = (int *)Alloc(n2 * sizeof(int));
+        
+        // Copy data to temporary arrays L[] and R[]
+        for (int i = 0; i < n1; i++)
+            L[i] = arr[l + i];
+        for (int j = 0; j < n2; j++)
+            R[j] = arr[m + 1 + j];
+        
+        // Merge the temporary arrays back into arr[l..r]
+        int i = 0, j = 0, k = l;
+        while (i < n1 && j < n2) {
+            if (L[i] <= R[j]) {
+                arr[k] = L[i];
+                i++;
+            } else {
+                arr[k] = R[j];
+                j++;
+            }
+            k++;
+        }
+        
+        // Copy the remaining elements of L[], if any
+        while (i < n1) {
+            arr[k] = L[i];
+            i++;
+            k++;
+        }
+        
+        // Copy the remaining elements of R[], if any
+        while (j < n2) {
+            arr[k] = R[j];
+            j++;
+            k++;
+        }
+        
+        // Free the allocated memory
+        DeAlloc(L);
+        DeAlloc(R);
+    }
 }
 
 // parses input file to an integer array
